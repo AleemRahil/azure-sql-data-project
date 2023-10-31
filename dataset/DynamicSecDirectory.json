@@ -1,0 +1,30 @@
+{
+	"name": "DynamicSecDirectory",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "DynamicSecServer",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"cik": {
+				"type": "string",
+				"defaultValue": "1503948"
+			}
+		},
+		"folder": {
+			"name": "SecFilings"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "HttpServerLocation",
+				"relativeUrl": {
+					"value": "@concat(dataset().cik, '/index.json')",
+					"type": "Expression"
+				}
+			}
+		},
+		"schema": {}
+	}
+}

@@ -1,0 +1,66 @@
+{
+	"name": "Cosmos_News_Articles_Pipeline",
+	"properties": {
+		"description": "Represents the Azure Data Factory Pipeline that is used to load the data and clean it up.",
+		"activities": [
+			{
+				"name": "Step 1 - Run Azure New Function",
+				"description": "Runs the Sigma Coding Azure News Function to grab the latest news articles.",
+				"type": "AzureFunctionActivity",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"functionName": "NewsArticleManual?upload_to=blob",
+					"method": "GET"
+				},
+				"linkedServiceName": {
+					"referenceName": "SigmaNewsFunction",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Step 2 - Clean Up News Articles",
+				"description": "Modifies the News Articles to remove empty fields and ensure they have proper data types.",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [
+					{
+						"activity": "Step 1 - Run Azure New Function",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "Cosmos_News_Articles_Data_Flow",
+						"type": "DataFlowReference"
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"folder": {
+			"name": "FinancialArticles"
+		},
+		"annotations": []
+	}
+}
